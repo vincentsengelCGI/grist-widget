@@ -103,8 +103,7 @@ grist.onRecord(function (record, mappings) {
 
   console.log("onRecord");
   console.log("id", record.id);
-  console.log("content", mapped?.Content);
-  console.log("lastContent", lastContent);
+  
 
   quill.enable();
 
@@ -115,6 +114,7 @@ grist.onRecord(function (record, mappings) {
     column = mappings?.Content;
 
     const mapped = grist.mapColumnNames(record);
+    console.log("content", mapped?.Content);
 
   const serializedContent = mapped.Content;
 
@@ -133,12 +133,13 @@ grist.onRecord(function (record, mappings) {
           const content = safeParse(mapped.Content);
 
           lastContent = serializedContent;
-
+          console.log("lastContent", lastContent);
+          
           quill.setContents(content);
       }
     }
   }
-  
+
   exportColumn = mappings?.HTML;
 });
 
