@@ -98,30 +98,53 @@ grist.ready({requiredAccess: 'full', columns: [{name: 'Content', type: 'Text'}, 
     showPanel('configuration');
   },
 });
+
 grist.onRecord(function (record, mappings) {
+
+  console.log("onRecord");
+  console.log("id", record.id);
+  console.log("content", mapped?.Content);
+  console.log("lastContent", lastContent);
+
   quill.enable();
+
   // If this is a new record, or mapping is diffrent.
+
   if (id !== record.id || mappings?.Content !== column) {
     id = record.id;
     column = mappings?.Content;
+
     const mapped = grist.mapColumnNames(record);
-    if (!mapped) {
-      // Log but don't bother user - maybe we are just testing.
-      console.error('Please map columns');
-    } else if (lastContent !== mapped.Content) {
-      // We will remember last thing sent, to not remove progress.
-      const content = safeParse(mapped.Content);
-      lastContent = JSON.stringify(content);
-      quill.setContents(content);
+
+  const serializedContent = mapped.Content;
+
+    if (mapped) {
+
+      const serializedContent = mapped.Content;
+
+      if (
+          id !== record.id ||
+          mappings?.Content !== column ||
+          serializedContent !== lastContent
+      ) {
+          id = record.id;
+          column = mappings?.Content;
+
+          const content = safeParse(mapped.Content);
+
+          lastContent = serializedContent;
+
+          quill.setContents(content);
+      }
     }
   }
+  
   exportColumn = mappings?.HTML;
 });
 
 grist.onNewRecord(function () {
   id = null;
   lastContent = null;
-  quill.setContents(null);
   quill.disable();
 })
 
